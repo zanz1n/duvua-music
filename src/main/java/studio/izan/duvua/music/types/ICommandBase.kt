@@ -8,8 +8,6 @@ import javax.annotation.Nullable
 interface ICommandBase {
     val name: String
 
-    val description: String
-
     @Nullable
     val options: List<OptionData>?
 

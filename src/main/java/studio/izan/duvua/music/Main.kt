@@ -49,12 +49,12 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         loadOptions(args)
-        DuvuaMusic(this.token, PostgresOptions(
-            postgresHost,
-            postgresUsername,
-            postgresPassword,
-            postgresDatabase,
-            postgresMaxPoolSize?.toInt()
-        )).run()
+        DuvuaMusic(this.token, object : PostgresOptions {
+            override val databaseName = postgresDatabase
+            override val username = postgresUsername
+            override val host = postgresHost
+            override val password = postgresPassword
+            override val maxPoolSize = postgresMaxPoolSize?.toInt()
+        }).run()
     }
 }

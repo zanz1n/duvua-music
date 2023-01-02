@@ -1,18 +1,21 @@
 package studio.izan.duvua.music.commands
 
+import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import org.slf4j.Logger
 import studio.izan.duvua.music.DuvuaMusic
+import studio.izan.duvua.music.player.PlayerManager
 import studio.izan.duvua.music.types.ICommandBase
+import studio.izan.duvua.music.types.SEmbedBuilder
+import studio.izan.duvua.music.utils.mention
+import java.net.URI
+import java.net.URISyntaxException
 
 class PlayCommand(private val logger: Logger): ICommandBase {
     override val name: String
         get() = "play"
-
-    override val description: String
-        get() = "Toca uma música do youtube"
 
     override val options: List<OptionData>
         get() = arrayListOf(
@@ -24,15 +27,63 @@ class PlayCommand(private val logger: Logger): ICommandBase {
             )
         )
 
+    private fun isUrl(url: String): Boolean {
+        return try {
+            URI(url)
+            true
+        } catch (e: URISyntaxException) {
+            false
+        }
+    }
+
     override fun run(interaction: SlashCommandEvent, client: DuvuaMusic) {
         if (interaction.guild == null) return
-        val statement = client.dba.connection
-            .prepareStatement("SELECT \"musicStrictM\" FROM \"Guild\" WHERE \"dcId\" = (?);")
-        val song = interaction.options.find { opt -> opt.name == "song" }?.asString
+        if (interaction.member == null) return
 
-        logger.info(song)
-        statement.setString(1, interaction.guild!!.id)
-        val result = statement.executeQuery()
-        logger.info(result.toString())
+        val vc = interaction.member!!.voiceState?.channel;
+
+        if (vc == null) {
+            val embed = SEmbedBuilder.createDefault("Você precisa estar em um " +
+                    "canal de texto para usar esse comando, ${mention(interaction.user)}")
+
+            interaction.replyEmbeds(embed).queue()
+            return
+        }
+
+        var song = interaction.options.find { opt -> opt.name == "song" }?.asString
+
+        if (song == null || song.length > 150) {
+            val embed = SEmbedBuilder.createDefault("Insira uma url ou um " +
+                    "termo de pesquisa válido ${mention(interaction.user)}")
+
+            interaction.replyEmbeds(embed).queue()
+            return
+        }
+
+        val hasPermission = client.dba.getMember(interaction.member!!).isAllowedToPlay()
+
+        if (!hasPermission) {
+            val embed = SEmbedBuilder
+                .createDefault("Você não tem permissão para usar" +
+                        " esse comando ${mention(interaction.user)}")
+            interaction.replyEmbeds(embed).queue()
+            return
+        }
+
+        interaction.replyEmbeds(SEmbedBuilder.createDefault("OK")).queue()
+
+        if (interaction.guild!!.selfMember.voiceState?.inVoiceChannel() != true) {
+            val audioManager = interaction.guild!!.audioManager;
+
+            audioManager.openAudioConnection(vc);
+        }
+
+        val channel = interaction.channel as TextChannel
+
+        if (!isUrl(song)) {
+            song = "ytsearch:$song"
+        }
+
+        PlayerManager.getInstance().loadAndPlay(channel, song, interaction.member)
     }
 }

@@ -1,16 +1,19 @@
 package studio.izan.duvua.music.commands
 
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.interactions.Interaction
+import net.dv8tion.jda.api.interactions.components.ActionRow
 import org.slf4j.Logger
 import studio.izan.duvua.music.DuvuaMusic
 import studio.izan.duvua.music.player.PlayerManager
 import studio.izan.duvua.music.types.IButtonIntegrableCommandBase
 import studio.izan.duvua.music.types.SEmbedBuilder
+import studio.izan.duvua.music.utils.DefaultButtons
 import studio.izan.duvua.music.utils.mention
 
-class StopCommand(private val logger: Logger): IButtonIntegrableCommandBase {
+class ResumeCommand(private val logger: Logger): IButtonIntegrableCommandBase {
     override val name: String
-        get() = "stop"
+        get() = "resume"
 
     override fun run(interaction: Interaction, client: DuvuaMusic) {
         if (interaction.guild == null) return
@@ -36,21 +39,15 @@ class StopCommand(private val logger: Logger): IButtonIntegrableCommandBase {
 
         val musicManager = PlayerManager.getInstance().getMusicManager(interaction.guild)
 
-        if (interaction.guild!!.selfMember.voiceState?.inVoiceChannel() != true
-            || musicManager.audioPlayer.playingTrack == null) {
+        val embed = SEmbedBuilder.createDefault("A fila foi despausada por ${mention(interaction.user)}")
 
-            val embed = SEmbedBuilder.createDefault("Não tem nenhum som na playlist, ${mention(interaction.user)}")
-            interaction.replyEmbeds(embed).queue()
-            return
-        }
+        val message = MessageBuilder()
+            .setEmbeds(embed)
+            .setActionRows(ActionRow.of(DefaultButtons.pauseButton))
+            .build()
 
-        val embed = SEmbedBuilder.createDefault("A playlist foi limpa por ${mention(interaction.user)}")
+        musicManager.audioPlayer.isPaused = false
 
-        val reply = interaction.replyEmbeds(embed)
-
-        musicManager.scheduler.audioPlayer.stopTrack()
-        musicManager.scheduler.queue.clear()
-
-        reply.queue()
+        interaction.reply(message).queue()
     }
 }

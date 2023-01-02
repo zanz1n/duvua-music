@@ -1,29 +1,24 @@
 package studio.izan.duvua.music.commands
 
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.Interaction
+import net.dv8tion.jda.api.interactions.InteractionType
 import org.slf4j.Logger
 import studio.izan.duvua.music.DuvuaMusic
 import studio.izan.duvua.music.player.PlayerManager
+import studio.izan.duvua.music.player.progressbar.ProgressBarManager
 import studio.izan.duvua.music.types.IButtonIntegrableCommandBase
 import studio.izan.duvua.music.types.SEmbedBuilder
 import studio.izan.duvua.music.utils.mention
 
-class StopCommand(private val logger: Logger): IButtonIntegrableCommandBase {
+class TrackCommand(private val logger: Logger): IButtonIntegrableCommandBase {
     override val name: String
-        get() = "stop"
+        get() = "track"
 
     override fun run(interaction: Interaction, client: DuvuaMusic) {
         if (interaction.guild == null) return
         if (interaction.member == null) return
-
-        val memberProvider = client.dba.getMember(interaction.member!!)
-
-        if (!memberProvider.isDj()) {
-            val embed = SEmbedBuilder.createDefault("Você não tem permissão para usar" +
-                    " esse comando, ${mention(interaction.user)}")
-            interaction.replyEmbeds(embed).queue()
-            return
-        }
 
         val vc = interaction.member?.voiceState?.channel;
 
@@ -44,13 +39,8 @@ class StopCommand(private val logger: Logger): IButtonIntegrableCommandBase {
             return
         }
 
-        val embed = SEmbedBuilder.createDefault("A playlist foi limpa por ${mention(interaction.user)}")
+        ProgressBarManager.getInstance().create(musicManager.audioPlayer.playingTrack, interaction.textChannel)
 
-        val reply = interaction.replyEmbeds(embed)
-
-        musicManager.scheduler.audioPlayer.stopTrack()
-        musicManager.scheduler.queue.clear()
-
-        reply.queue()
+        interaction.replyEmbeds(SEmbedBuilder.createDefault("OK")).queue()
     }
 }
