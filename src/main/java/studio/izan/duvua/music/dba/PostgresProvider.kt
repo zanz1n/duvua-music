@@ -36,6 +36,5 @@ class PostgresProvider(
         return MemberProvider(this.connection, member)
     }
 
-    val connection: Connection
-        get() = dataSource.connection
+    val connection: Connection = dataSource.connection
 }

@@ -11,6 +11,10 @@ class MemberProvider(
     private val member: Member) {
 
     fun isAllowedToPlay(): Boolean {
+        if (member.permissions.contains(Permission.ADMINISTRATOR)) {
+            return true
+        }
+
         val statement = connection.prepareStatement(
             "SELECT \"musicStrictM\" FROM \"Guild\" WHERE \"dcId\" = (?);"
         )
