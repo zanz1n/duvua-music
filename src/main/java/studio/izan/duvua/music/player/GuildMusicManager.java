@@ -42,4 +42,8 @@ public class GuildMusicManager {
     public void setLoop(Boolean value) {
         this.scheduler.setLoop(value);
     }
+
+    public boolean isLooping() {
+        return this.scheduler.isLooping();
+    }
 }
