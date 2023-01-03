@@ -81,7 +81,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public void setMessageChannel(TextChannel messageChannel) {
         this.messageChannel = messageChannel;
     }
-    public Boolean idLooping() {
+    public Boolean isLooping() {
         return loop;
     }
     public void setLoop(Boolean loop) {
