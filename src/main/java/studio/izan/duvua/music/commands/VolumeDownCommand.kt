@@ -26,7 +26,7 @@ class VolumeDownCommand(private val logger: Logger): IButtonIntegrableCommandBas
         val beforeVolume = musicManager.audioPlayer.volume
 
         if (beforeVolume - 25 <= 0) {
-            musicManager.audioPlayer.volume = 1
+            musicManager.audioPlayer.volume = 0
         } else {
             musicManager.audioPlayer.volume -= 25
         }
