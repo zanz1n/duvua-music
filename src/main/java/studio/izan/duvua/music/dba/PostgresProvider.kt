@@ -20,7 +20,7 @@ class PostgresProvider(
             driverClassName = "org.postgresql.Driver"
             username = dbOptions.username
             password = dbOptions.password
-            maximumPoolSize = dbOptions.maxPoolSize ?: 10
+            maximumPoolSize = dbOptions.maxPoolSize ?: 14
             isAutoCommit = false
             validate()
         }
