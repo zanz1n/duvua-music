@@ -23,7 +23,13 @@ class VolumeDownCommand(private val logger: Logger): IButtonIntegrableCommandBas
 
         val musicManager = PlayerManager.getInstance().getMusicManager(interaction.guild)
 
-        musicManager.audioPlayer.volume -= 25
+        val beforeVolume = musicManager.audioPlayer.volume
+
+        if (beforeVolume - 25 <= 0) {
+            musicManager.audioPlayer.volume = 1
+        } else {
+            musicManager.audioPlayer.volume -= 25
+        }
 
         val embed = SEmbedBuilder
             .createDefault("O volume foi diminuído para ${musicManager.audioPlayer.volume}")

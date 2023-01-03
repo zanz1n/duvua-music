@@ -23,7 +23,13 @@ class VolumeUpCommand(private val logger: Logger): IButtonIntegrableCommandBase 
 
         val musicManager = PlayerManager.getInstance().getMusicManager(interaction.guild)
 
-        musicManager.audioPlayer.volume -= 25
+        val beforeVolume = musicManager.audioPlayer.volume
+
+        if (beforeVolume + 25 > 200) {
+            musicManager.audioPlayer.volume = 200
+        } else {
+            musicManager.audioPlayer.volume += 25
+        }
 
         val embed = SEmbedBuilder
             .createDefault("O volume foi aumentado para ${musicManager.audioPlayer.volume}")
