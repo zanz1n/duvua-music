@@ -14,23 +14,27 @@ class DefaultListener(private val client: DuvuaMusic): ListenerAdapter() {
     private val logger = LoggerFactory.getLogger("CommandEvent")
 
     val listeningCommands: List<ICommandBase> = arrayListOf(
-        PlayCommand(logger)
+        PlayCommand(logger),
+        VolumeCommand(logger),
     )
 
     val buttonIntegrableListengCommands: List<IButtonIntegrableCommandBase> = arrayListOf(
         StopCommand(logger),
         PauseCommand(logger),
         ResumeCommand(logger),
-        TrackCommand(logger)
+        VolumeUpCommand(logger),
+        VolumeDownCommand(logger)
     )
 
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.user.isBot) return
         if (event.guild == null) return
-        thread(true,
-            false,
-            null,
-            "CMD-${event.name.uppercase()}-Thread-${System.currentTimeMillis()}") {
+        thread(
+            start = true,
+            isDaemon = false,
+            contextClassLoader = null,
+            name = "CMD-${event.name.uppercase()}-Thread-${System.currentTimeMillis()}"
+        ) {
             val command = listeningCommands.find { cmd -> cmd.name == event.name }
             if (command == null) {
                 val cmd = buttonIntegrableListengCommands.find { cmd -> cmd.name == event.name }
@@ -45,10 +49,11 @@ class DefaultListener(private val client: DuvuaMusic): ListenerAdapter() {
     override fun onButtonClick(event: ButtonClickEvent) {
         if (event.user.isBot) return
         if (event.guild == null) return
-        thread(true,
-            false,
-            null,
-            "BTN-${event.button?.id?.uppercase()}-Thread-${System.currentTimeMillis()}") {
+        thread(
+            start = true,
+            isDaemon = false,
+            contextClassLoader = null,
+            name = "BTN-${event.button?.id?.uppercase()}-Thread-${System.currentTimeMillis()}") {
             val command = buttonIntegrableListengCommands.find { btnI ->
                 btnI.name+"-button" == event.interaction.button?.id
             }
