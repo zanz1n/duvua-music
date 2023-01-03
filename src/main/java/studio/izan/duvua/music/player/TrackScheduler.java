@@ -60,7 +60,7 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (this.loop) {
-            this.audioPlayer.startTrack(track, false);
+            this.audioPlayer.startTrack(track.makeClone(), false);
             return;
         }
         if (endReason.mayStartNext) {
