@@ -26,6 +26,9 @@ public class DefaultButtons {
     public static Button volumeDownButton = Button.secondary("volume-down-button", "- Volume")
             .withEmoji(Emoji.fromUnicode("🔉"));
 
+    public static Button queueButton = Button.primary("queue-button", "Playlist")
+            .withEmoji(Emoji.fromUnicode("🎵"));
+
     public static ActionRow defaultActionRow = ActionRow.of(
             skipButton,
             stopButton,
@@ -36,6 +39,7 @@ public class DefaultButtons {
     public static ActionRow defaultActionRow2 = ActionRow.of(
             loopButton,
             volumeUpButton,
-            volumeDownButton
+            volumeDownButton,
+            queueButton
     );
 }
