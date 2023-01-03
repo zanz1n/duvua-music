@@ -27,6 +27,7 @@ class StopCommand(private val logger: Logger): IButtonIntegrableCommandBase {
 
         val reply = interaction.replyEmbeds(embed)
 
+        musicManager.scheduler.setLoop(false)
         musicManager.scheduler.audioPlayer.stopTrack()
         musicManager.scheduler.queue.clear()
 
