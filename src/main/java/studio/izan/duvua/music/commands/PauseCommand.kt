@@ -9,6 +9,7 @@ import studio.izan.duvua.music.player.PlayerManager
 import studio.izan.duvua.music.types.IButtonIntegrableCommandBase
 import studio.izan.duvua.music.types.SEmbedBuilder
 import studio.izan.duvua.music.utils.DefaultButtons
+import studio.izan.duvua.music.utils.admUpdateVerify
 import studio.izan.duvua.music.utils.mention
 
 class PauseCommand(private val logger: Logger): IButtonIntegrableCommandBase {
@@ -19,23 +20,9 @@ class PauseCommand(private val logger: Logger): IButtonIntegrableCommandBase {
         if (interaction.guild == null) return
         if (interaction.member == null) return
 
-        val memberProvider = client.dba.getMember(interaction.member!!)
+        val verify = admUpdateVerify(interaction, client)
 
-        if (!memberProvider.isDj()) {
-            val embed = SEmbedBuilder.createDefault("Você não tem permissão para usar" +
-                    " esse comando, ${mention(interaction.user)}")
-            interaction.replyEmbeds(embed).queue()
-            return
-        }
-
-        val vc = interaction.member?.voiceState?.channel;
-
-        if (vc == null) {
-            val embed = SEmbedBuilder.createDefault("Você precisa estar em um canal de voz para" +
-                    "usar esse comando, ${mention(interaction.user)}")
-            interaction.replyEmbeds(embed).queue()
-            return
-        }
+        if (!verify) return
 
         val musicManager = PlayerManager.getInstance().getMusicManager(interaction.guild)
 

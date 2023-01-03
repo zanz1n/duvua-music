@@ -9,6 +9,7 @@ import studio.izan.duvua.music.DuvuaMusic
 import studio.izan.duvua.music.player.PlayerManager
 import studio.izan.duvua.music.types.ICommandBase
 import studio.izan.duvua.music.types.SEmbedBuilder
+import studio.izan.duvua.music.utils.defaultCreateVerify
 import studio.izan.duvua.music.utils.mention
 import java.net.URI
 import java.net.URISyntaxException
@@ -40,15 +41,11 @@ class PlayCommand(private val logger: Logger): ICommandBase {
         if (interaction.guild == null) return
         if (interaction.member == null) return
 
-        val vc = interaction.member!!.voiceState?.channel;
+        val verify = defaultCreateVerify(interaction, client)
 
-        if (vc == null) {
-            val embed = SEmbedBuilder.createDefault("Você precisa estar em um " +
-                    "canal de texto para usar esse comando, ${mention(interaction.user)}")
+        if (!verify) return
 
-            interaction.replyEmbeds(embed).queue()
-            return
-        }
+        val vc = interaction.member!!.voiceState?.channel
 
         var song = interaction.options.find { opt -> opt.name == "song" }?.asString
 
@@ -56,16 +53,6 @@ class PlayCommand(private val logger: Logger): ICommandBase {
             val embed = SEmbedBuilder.createDefault("Insira uma url ou um " +
                     "termo de pesquisa válido ${mention(interaction.user)}")
 
-            interaction.replyEmbeds(embed).queue()
-            return
-        }
-
-        val hasPermission = client.dba.getMember(interaction.member!!).isAllowedToPlay()
-
-        if (!hasPermission) {
-            val embed = SEmbedBuilder
-                .createDefault("Você não tem permissão para usar" +
-                        " esse comando ${mention(interaction.user)}")
             interaction.replyEmbeds(embed).queue()
             return
         }
