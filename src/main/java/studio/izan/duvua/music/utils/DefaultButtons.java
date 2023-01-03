@@ -20,8 +20,11 @@ public class DefaultButtons {
     public static Button loopButton = Button.primary("loop-button", "Loop")
             .withEmoji(Emoji.fromUnicode("🔁"));
 
-    public static Button infoButton = Button.primary("track-button", "Info")
-            .withEmoji(Emoji.fromUnicode("ℹ️"));
+    public static Button volumeUpButton = Button.secondary("volume-up-button", "+ Volume")
+            .withEmoji(Emoji.fromUnicode("🔊"));
+
+    public static Button volumeDownButton = Button.secondary("volume-down-button", "- Volume")
+            .withEmoji(Emoji.fromUnicode("🔉"));
 
     public static ActionRow defaultActionRow = ActionRow.of(
             skipButton,
@@ -32,6 +35,7 @@ public class DefaultButtons {
 
     public static ActionRow defaultActionRow2 = ActionRow.of(
             loopButton,
-            infoButton
+            volumeUpButton,
+            volumeDownButton
     );
 }
