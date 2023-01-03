@@ -7,16 +7,11 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import studio.izan.duvua.music.player.progressbar.ProgressBarManager;
 import studio.izan.duvua.music.types.SEmbedBuilder;
-import studio.izan.duvua.music.utils.DefaultButtons;
-import studio.izan.duvua.music.utils.TimeParsersKt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +38,7 @@ public class PlayerManager {
         });
     }
 
-    private String getThumbnailByUri(String uri) {
+    public static String getThumbnailByUri(String uri) {
         final String[] splited = uri.split("/");
         return "https://img.youtube.com/vi/" +
                 splited[splited.length -1].replace("watch?v=", "") +
@@ -60,32 +55,7 @@ public class PlayerManager {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
                 musicManager.getScheduler().enqueue(audioTrack);
-                final AudioTrackInfo info = audioTrack.getInfo();
-                final String description = "**Música** [" + info.title + "]("+
-                        info.uri + ") **de** " + info.author + " **adicionada à playlist**\n\n" +
-                        "**Duração: [" + TimeParsersKt.parseMsIntoStringForm(audioTrack.getDuration()) + "]**";
-                String userName = member.getNickname();
-                if (userName == null) {
-                    userName = member.getUser().getName();
-                }
-
-                String avatarUrl = member.getAvatarUrl();
-                if (avatarUrl == null) {
-                    avatarUrl = member.getUser().getAvatarUrl();
-                }
-
-                MessageEmbed embed = new SEmbedBuilder()
-                        .setDescription(description)
-                        .setThumbnail(getThumbnailByUri(audioTrack.getInfo().uri))
-                        .setFooter("Requisitado por " + userName, avatarUrl)
-                        .build();
-
-                Message finalMessage = new MessageBuilder()
-                        .setEmbeds(embed)
-                        .setActionRows(DefaultButtons.defaultActionRow, DefaultButtons.defaultActionRow2)
-                        .build();
-
-                textChannel.sendMessage(finalMessage).queue();
+                ProgressBarManager.getInstance().createInternal(audioTrack, textChannel, member);
             }
 
             private void resolveFailedLoad() {
