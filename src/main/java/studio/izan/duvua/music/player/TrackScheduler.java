@@ -35,13 +35,23 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     @Nullable
-    public AudioTrack nextTrack() {
+    private AudioTrack nextTrack() {
         final AudioTrack next = this.queue.poll();
         if (next == null) {
             return null;
         }
         this.audioPlayer.startTrack(next, false);
         return next;
+    }
+
+    @Nullable
+    public AudioTrack skipTrack() {
+        loop = false;
+        final AudioTrack track = nextTrack();
+        if (track == null) {
+            resolveQueueEnd(this.audioPlayer);
+        }
+        return track;
     }
 
     private void resolveQueueEnd(AudioPlayer player) {

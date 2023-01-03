@@ -25,7 +25,8 @@ class DefaultListener(private val client: DuvuaMusic): ListenerAdapter() {
         VolumeUpCommand(logger),
         VolumeDownCommand(logger),
         LoopCommand(logger),
-        QueueCommand(logger)
+        QueueCommand(logger),
+        SkipCommand(logger)
     )
 
     override fun onSlashCommand(event: SlashCommandEvent) {
