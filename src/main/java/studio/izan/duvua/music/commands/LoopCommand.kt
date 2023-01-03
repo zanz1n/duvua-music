@@ -23,7 +23,7 @@ class LoopCommand(private val logger: Logger): IButtonIntegrableCommandBase {
         val musicManager = PlayerManager.getInstance().getMusicManager(interaction.guild)
         val looping = musicManager.isLooping
 
-        val message = if (looping) "O loop foi desativado" else "O loop foi ativado"
+        val message = if (looping) "Loop desativado" else "Loop ativado"
 
         musicManager.setLoop(!looping)
 
