@@ -12,6 +12,7 @@ class MemberProvider(
 
     fun isAllowedToPlay(): Boolean {
         if (member.permissions.contains(Permission.ADMINISTRATOR)) {
+            connection.close()
             return true
         }
 
@@ -42,15 +43,17 @@ class MemberProvider(
                 try {
                     hasPermission = memberResult.getBoolean("playAllowed")
                 } catch (_: SQLException) {}
-
+                connection.close()
                 return hasPermission
             }
         }
+        connection.close()
         return true
     }
 
     fun isDj(): Boolean {
         if (member.permissions.contains(Permission.ADMINISTRATOR)) {
+            connection.close()
             return true
         }
 
@@ -67,7 +70,7 @@ class MemberProvider(
         try {
             dj = result.getBoolean("dj")
         } catch (_: SQLException) {}
-
+        connection.close()
         return dj
     }
 }

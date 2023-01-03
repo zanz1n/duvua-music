@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Member
 import org.slf4j.LoggerFactory
 import studio.izan.duvua.music.types.PostgresOptions
 import java.sql.Connection
+import kotlin.concurrent.thread
 
 class PostgresProvider(
     private val dbOptions: PostgresOptions
@@ -33,8 +34,6 @@ class PostgresProvider(
     private val dataSource = getDataSource()
 
     fun getMember(member: Member): MemberProvider {
-        return MemberProvider(this.connection, member)
+        return MemberProvider(this.dataSource.connection, member)
     }
-
-    val connection: Connection = dataSource.connection
 }
