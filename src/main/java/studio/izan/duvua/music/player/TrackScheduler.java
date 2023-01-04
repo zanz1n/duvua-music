@@ -47,11 +47,7 @@ public class TrackScheduler extends AudioEventAdapter {
     @Nullable
     public AudioTrack skipTrack() {
         loop = false;
-        final AudioTrack track = nextTrack();
-        if (track == null) {
-            resolveQueueEnd(this.audioPlayer);
-        }
-        return track;
+        return nextTrack();
     }
 
     private void resolveQueueEnd(AudioPlayer player) {
