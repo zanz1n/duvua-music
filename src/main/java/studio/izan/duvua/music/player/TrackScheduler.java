@@ -37,9 +37,6 @@ public class TrackScheduler extends AudioEventAdapter {
     @Nullable
     private AudioTrack nextTrack() {
         final AudioTrack next = this.queue.poll();
-        if (next == null) {
-            return null;
-        }
         this.audioPlayer.startTrack(next, false);
         return next;
     }
@@ -72,6 +69,8 @@ public class TrackScheduler extends AudioEventAdapter {
         if (endReason.mayStartNext) {
             final AudioTrack next = nextTrack();
             if (next != null) return;
+        } else if (endReason == AudioTrackEndReason.REPLACED) {
+            return;
         }
         resolveQueueEnd(player);
     }
